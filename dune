@@ -1,0 +1,6 @@
+(library
+ (public_name optics)
+ (libraries result)
+ (flags :standard)
+ ;; (preprocess (pps sedlex.ppx))
+)

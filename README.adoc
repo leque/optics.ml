@@ -1,0 +1,30 @@
+# optics.ml
+
+An experimental optic library for OCaml.
+
+## Usage
+
+```ocaml
+% dune utop
+# open Optics;;
+# get _1 (42, 3.14);;
+- : int = 42
+# get (_2 // _1) (42, (3.14, "foobar"));;
+- : float = 3.14
+# set _Some 3.14 (Some 42);;
+- : float option = Option.Some 3.14
+# set _Some 3.14 None;;
+- : float option = Option.None
+# (Some [1; 2; 3], 3.14) |> (_1 // _Some // sets List.map) %~ succ;;
+- : int list option * float = (Option.Some [2; 3; 4], 3.14)
+# get _Some;;
+Error: This expression has type
+         ([< prism ] as 'a, 'b option, 'c option, 'b, 'c) t =
+           unit -> ('a, 'b option, 'c option, 'b, 'c) Optics._t
+       but an expression was expected of type
+         ([> getter ] as 'd, 'e, 'f, 'g, 'h) t =
+           unit -> ('d, 'e, 'f, 'g, 'h) Optics._t
+       Type 'a = [< `Prism | `Setter ] is not compatible with type
+         'd = [> `Getter ] 
+       The first variant type does not allow tag(s) `Getter
+```
