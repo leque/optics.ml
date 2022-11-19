@@ -32,16 +32,17 @@ let to_ sa () =
 let get t s =
   app t Fun.const s (fun _ -> assert false)
 
-let sets (type b) f () =
+let uncps (type b r) : ('a -> (b -> r) -> r) -> ('a -> b) =
+  fun f a ->
+  let exception Return of b in
+  try
+    ignore (f a (fun b -> raise (Return b)) : r);
+    assert false
+  with Return b -> b
+
+let sets f () =
   let op acont s tcont =
-    let exception Return of b in
-    let ab a =
-      try
-        ignore (acont a (fun b -> raise (Return b)));
-        assert false
-      with Return b -> b
-    in
-    tcont (f ab s)
+    tcont (f (uncps acont) s)
   in
   { op }
 
