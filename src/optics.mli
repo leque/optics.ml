@@ -85,13 +85,17 @@ module O : sig
   val (.%[]) : 's -> ([> getter], 's, 't, 'a, 'b) t -> 'a
   (** Index operator version of {!val:get}.
 
-      [x.%[t]] === [get t x].
+      [x.%[t]]
+      === [x |> get t]
+      === [get t x].
   *)
 
   val (.%[]<-) : 's -> ([> setter], 's, 't, 'a, 'b) t -> 'b -> 't
   (** Index operator version of {!val:set}.
 
-      [x.%[t] <- v] === [set t v x].
+      [x.%[t] <- v]
+      === [x |> set t v]
+      === [set t v x].
   *)
 
   val (%~) : ([> setter], 's, 't, 'a, 'b) t -> ('a -> 'b) -> 's -> 't
