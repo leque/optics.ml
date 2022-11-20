@@ -9,10 +9,10 @@ type prism = [setter|`Prism]
 type lens = [getter|setter|`Lens]
 type iso = [prism|lens|`Iso]
 
-type (+'k, -'s, +'t, +'a, -'b) _t =
+type ('k, -'s, +'t, +'a, -'b) _t =
   { op : 'r. ('a -> ('b -> 'r) -> 'r) -> ('s -> ('t -> 'r) -> 'r) }
 
-type (+'k, -'s, +'t, +'a, -'b) t = unit -> ('k, 's, 't, 'a, 'b) _t
+type ('k, -'s, +'t, +'a, -'b) t = unit -> ('k, 's, 't, 'a, 'b) _t
 
 type ('k, 's, 'a) _t' = ('k, 's, 's, 'a, 'a) _t
 type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
