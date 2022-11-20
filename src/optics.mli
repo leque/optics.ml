@@ -41,15 +41,6 @@ type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
 (** Type synonym for type-preserving optics + eta-expansion. *)
 
 
-(** {1:getter Getter} *)
-
-val to_  : ('s -> 'a) -> ([< getter], 's, 'a) t'
-(** Build a getter from a function. *)
-
-val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
-(** Get the value pointed to by a getter. *)
-
-
 (** {1:setter Setter} *)
 
 val sets : (('a -> 'b) -> 's -> 't) -> ([< setter], 's, 't, 'a, 'b) t
@@ -83,6 +74,15 @@ val affine_traversal :
 val matching : ([> affine_traversal], 's, 't, 'a, 'b) t -> 's -> ('a, 't) Result.t
 (** Retrieve the value targeted by an affine traversal
     or return the original value while allowing the type to change if it does not match. *)
+
+
+(** {1:getter Getter} *)
+
+val to_  : ('s -> 'a) -> ([< getter], 's, 'a) t'
+(** Build a getter from a function. *)
+
+val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
+(** Get the value pointed to by a getter. *)
 
 
 (** {1:prism Prism} *)
