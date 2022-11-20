@@ -5,8 +5,9 @@
    *)
 type getter = [`Getter]
 type setter = [`Setter]
-type prism = [setter|`Prism]
-type lens = [getter|setter|`Lens]
+type affine_traversal = [setter|`Affine_traversal]
+type prism = [affine_traversal|`Prism]
+type lens = [getter|affine_traversal|`Lens]
 type iso = [prism|lens|`Iso]
 
 type ('k, -'s, +'t, +'a, -'b) _t =
@@ -46,6 +47,16 @@ let over t f s =
 
 let set t v s =
   over t (Fun.const v) s
+
+let affine_traversal destruct update =
+  let op acont s tcont =
+    Result.fold (destruct s)
+      ~error:tcont
+      ~ok:(fun x -> acont x (fun b -> tcont (update s b)))
+  in { op }
+
+let matching t s =
+  app t (fun a _bcont -> Result.ok a) s (fun t -> Result.error t)
 
 let prism construct destruct =
   let op acont s tcont =

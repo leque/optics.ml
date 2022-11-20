@@ -9,10 +9,13 @@ type getter = [`Getter]
 type setter = [`Setter]
 (** Tag for {!section:setter}. *)
 
-type prism = [setter|`Prism]
+type affine_traversal = [setter|`Affine_traversal]
+(** Tag for {!section:atraversal}. *)
+
+type prism = [affine_traversal|`Prism]
 (** Tag for {!section:prism}. *)
 
-type lens = [getter|setter|`Lens]
+type lens = [getter|affine_traversal|`Lens]
 (** Tag for {!section:lens}. *)
 
 type iso = [prism|lens|`Iso]
@@ -54,6 +57,17 @@ val over : ([> setter], 's, 't, 'a, 'b) t -> ('a -> 'b) -> ('s -> 't)
 
 val set : ([> setter], 's, 't, 'a, 'b) t -> 'b -> 's -> 't
 (** Apply a setter. *)
+
+
+(** {1:atraversal Affine Traversal} *)
+
+val affine_traversal :
+  ('s -> ('a, 't) Result.t) -> ('s -> 'b -> 't) -> ([< affine_traversal], 's, 't, 'a, 'b) _t
+(** Build an affine traversal from a destructor and a setter. *)
+
+val matching : ([> affine_traversal], 's, 't, 'a, 'b) t -> 's -> ('a, 't) Result.t
+(** Retrieve the value targeted by an affine traversal
+    or return the original value while allowing the type to change if it does not match. *)
 
 
 (** {1:prism Prism} *)
