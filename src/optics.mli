@@ -3,14 +3,17 @@
 (** {2:kind Optic kind} *)
 (** Types representing optics hierarchy. *)
 
-type getter = [`Getter]
-(** Tag for {!section:getter}. *)
-
 type setter = [`Setter]
 (** Tag for {!section:setter}. *)
 
-type affine_traversal = [setter|`Affine_traversal]
+type affine_fold = [`Affine_fold]
+(** Tag for {!section:afold}. *)
+
+type affine_traversal = [setter|affine_fold|`Affine_traversal]
 (** Tag for {!section:atraversal}. *)
+
+type getter = [affine_fold|`Getter]
+(** Tag for {!section:getter}. *)
 
 type prism = [affine_traversal|`Prism]
 (** Tag for {!section:prism}. *)
@@ -57,6 +60,18 @@ val over : ([> setter], 's, 't, 'a, 'b) t -> ('a -> 'b) -> ('s -> 't)
 
 val set : ([> setter], 's, 't, 'a, 'b) t -> 'b -> 's -> 't
 (** Apply a setter. *)
+
+
+(** {1:afold Affine Fold} *)
+
+val affine_fold : ('s -> 'a Option.t) -> ([< affine_fold], 's, 'a) t'
+(** Build an affine fold from a partial function. *)
+
+val preview : ([> affine_fold], 's, 'a) t' -> 's -> 'a Option.t
+(** Retrieve the value targeted by an affine fold. *)
+
+val previews : ([> affine_fold], 's, 'a) t' -> ('a -> 'r) -> 's -> 'r Option.t
+(** Retrieve a function of the value targeted by an affine fold. *)
 
 
 (** {1:atraversal Affine Traversal} *)

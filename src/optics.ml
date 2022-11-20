@@ -3,9 +3,10 @@
    plus eta expansion
    https://stackoverflow.com/questions/29187287/sneaking-lenses-and-cps-past-the-value-restriction
    *)
-type getter = [`Getter]
 type setter = [`Setter]
-type affine_traversal = [setter|`Affine_traversal]
+type affine_fold = [`Affine_fold]
+type affine_traversal = [setter|affine_fold|`Affine_traversal]
+type getter = [affine_fold|`Getter]
 type prism = [affine_traversal|`Prism]
 type lens = [getter|affine_traversal|`Lens]
 type iso = [prism|lens|`Iso]
@@ -47,6 +48,19 @@ let over t f s =
 
 let set t v s =
   over t (Fun.const v) s
+
+let affine_fold f () =
+  let op acont s tcont =
+    match f s with
+    | Some a -> acont a (fun _b -> assert false)
+    | None -> tcont s
+  in { op }
+
+let previews t f s =
+  app t (fun a _bcont -> Some (f a)) s (fun _ -> None)
+
+let preview t s =
+  previews t Fun.id s
 
 let affine_traversal destruct update =
   let op acont s tcont =
