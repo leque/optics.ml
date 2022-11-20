@@ -29,11 +29,13 @@ let uncps (type b r) : ('a -> (b -> r) -> r) -> ('a -> b) =
     assert false
   with Return b -> b
 
-let sets f () =
+let sets f =
   let op acont s tcont =
     tcont (f (uncps acont) s)
   in
   { op }
+
+let sets' f () = sets f
 
 let over t f s =
   app t (fun a bcont -> bcont (f a)) s Fun.id
@@ -41,12 +43,14 @@ let over t f s =
 let set t v s =
   over t (Fun.const v) s
 
-let affine_fold f () =
+let affine_fold f =
   let op acont s tcont =
     match f s with
     | Some a -> acont a (fun _b -> assert false)
     | None -> tcont s
   in { op }
+
+let affine_fold' f () = affine_fold f
 
 let previews t f s =
   app t (fun a _bcont -> Some (f a)) s (fun _ -> None)
@@ -64,10 +68,12 @@ let affine_traversal destruct update =
 let matching t s =
   app t (fun a _bcont -> Result.ok a) s (fun t -> Result.error t)
 
-let to_ sa () =
+let to_ sa =
   let op acont s _tcont =
     acont (sa s) (fun _b -> assert false)
   in { op }
+
+let to_' sa () = to_ sa
 
 let get t s =
   app t Fun.const s (fun _ -> assert false)

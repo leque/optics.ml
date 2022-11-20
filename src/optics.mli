@@ -43,8 +43,11 @@ type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
 
 (** {1:setter Setter} *)
 
-val sets : (('a -> 'b) -> 's -> 't) -> ([< setter], 's, 't, 'a, 'b) t
+val sets : (('a -> 'b) -> 's -> 't) -> ([< setter], 's, 't, 'a, 'b) _t
 (** Build a setter from a function to modify the element(s). *)
+
+val sets' : (('a -> 'b) -> 's -> 't) -> ([< setter], 's, 't, 'a, 'b) t
+(** Eta-expanded version of {!val:sets}. *)
 
 val over : ([> setter], 's, 't, 'a, 'b) t -> ('a -> 'b) -> ('s -> 't)
 (** Apply a setter as a modifier. *)
@@ -55,8 +58,11 @@ val set : ([> setter], 's, 't, 'a, 'b) t -> 'b -> 's -> 't
 
 (** {1:afold Affine Fold} *)
 
-val affine_fold : ('s -> 'a Option.t) -> ([< affine_fold], 's, 'a) t'
+val affine_fold : ('s -> 'a Option.t) -> ([< affine_fold], 's, 'a) _t'
 (** Build an affine fold from a partial function. *)
+
+val affine_fold' : ('s -> 'a Option.t) -> ([< affine_fold], 's, 'a) t'
+(** Eta-expanded version of {!val:affine_fold}. *)
 
 val preview : ([> affine_fold], 's, 'a) t' -> 's -> 'a Option.t
 (** Retrieve the value targeted by an affine fold. *)
@@ -78,8 +84,11 @@ val matching : ([> affine_traversal], 's, 't, 'a, 'b) t -> 's -> ('a, 't) Result
 
 (** {1:getter Getter} *)
 
-val to_  : ('s -> 'a) -> ([< getter], 's, 'a) t'
+val to_  : ('s -> 'a) -> ([< getter], 's, 'a) _t'
 (** Build a getter from a function. *)
+
+val to_'  : ('s -> 'a) -> ([< getter], 's, 'a) t'
+(** Eta-expanded version of {!val:to_}. *)
 
 val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
 (** Get the value pointed to by a getter. *)

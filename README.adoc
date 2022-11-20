@@ -15,7 +15,7 @@ An experimental optic library for OCaml.
 - : float option = Option.Some 3.14
 # set _Some 3.14 None;;
 - : float option = Option.None
-# (Some [1; 2; 3], 3.14) |> (_1 // _Some // sets List.map) %~ succ;;
+# (Some [1; 2; 3], 3.14) |> (_1 // _Some // sets' List.map) %~ succ;;
 - : int list option * float = (Option.Some [2; 3; 4], 3.14)
 # get _Some;;
 Error: This expression has type
