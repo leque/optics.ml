@@ -58,6 +58,19 @@ let previews t f s =
 let preview t s =
   previews t Fun.id s
 
+let filtered p =
+  let op acont s tcont =
+    if p s then
+      acont s (fun _b -> assert false)
+    else
+      tcont s
+  in { op }
+
+let filtered' p () = filtered p
+
+let isn't t s =
+  Option.is_none (preview t s)
+
 let affine_traversal destruct update =
   let op acont s tcont =
     Result.fold (destruct s)

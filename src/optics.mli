@@ -70,6 +70,14 @@ val preview : ([> affine_fold], 's, 'a) t' -> 's -> 'a Option.t
 val previews : ([> affine_fold], 's, 'a) t' -> ('a -> 'r) -> 's -> 'r Option.t
 (** Retrieve a function of the value targeted by an affine fold. *)
 
+val filtered : ('a -> bool) -> ([< affine_fold], 'a, 'a) _t'
+(** Filter result(s) of a fold that don't satisfy a predicate. *)
+
+val filtered' : ('a -> bool) -> ([< affine_fold], 'a, 'a) t'
+(** Eta-expanded version of {!val:filtered}. *)
+
+val isn't : ([> affine_fold], 's, 'a) t' -> 's -> bool
+(** Test whether this affine fold does not match. *)
 
 (** {1:atraversal Affine Traversal} *)
 
