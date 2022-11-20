@@ -133,23 +133,23 @@ module O : sig
   val (.%[]) : 's -> ([> getter], 's, 't, 'a, 'b) t -> 'a
   (** Index operator version of {!val:get}.
 
-      [x.%[t]]
-      === [x |> get t]
-      === [get t x].
+      [x.%[o]]
+      === [x |> get o]
+      === [get o x].
   *)
 
   val (.%[]<-) : 's -> ([> setter], 's, 't, 'a, 'b) t -> 'b -> 't
   (** Index operator version of {!val:set}.
 
-      [x.%[t] <- v]
-      === [x |> set t v]
-      === [set t v x].
+      [x.%[o] <- v]
+      === [x |> set o v]
+      === [set o v x].
   *)
 
   val (%~) : ([> setter], 's, 't, 'a, 'b) t -> ('a -> 'b) -> 's -> 't
   (** Infix version of {!val:over}.
 
-      [x |> t %~ f] === [over t f x].
+      [x |> o %~ f] === [over o f x].
   *)
 end
 

@@ -19,7 +19,7 @@ type ('k, -'s, +'t, +'a, -'b) t = unit -> ('k, 's, 't, 'a, 'b) _t
 type ('k, 's, 'a) _t' = ('k, 's, 's, 'a, 'a) _t
 type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
 
-let app t = (t ()).op
+let app o = (o ()).op
 
 let uncps (type b r) : ('a -> (b -> r) -> r) -> ('a -> b) =
   fun f a ->
@@ -37,11 +37,11 @@ let sets f =
 
 let sets' f () = sets f
 
-let over t f s =
-  app t (fun a bcont -> bcont (f a)) s Fun.id
+let over o f s =
+  app o (fun a bcont -> bcont (f a)) s Fun.id
 
-let set t v s =
-  over t (Fun.const v) s
+let set o v s =
+  over o (Fun.const v) s
 
 let affine_fold f =
   let op acont s tcont =
@@ -52,11 +52,11 @@ let affine_fold f =
 
 let affine_fold' f () = affine_fold f
 
-let previews t f s =
-  app t (fun a _bcont -> Some (f a)) s (fun _ -> None)
+let previews o f s =
+  app o (fun a _bcont -> Some (f a)) s (fun _ -> None)
 
-let preview t s =
-  previews t Fun.id s
+let preview o s =
+  previews o Fun.id s
 
 let filtered p =
   let op acont s tcont =
@@ -68,8 +68,8 @@ let filtered p =
 
 let filtered' p () = filtered p
 
-let isn't t s =
-  Option.is_none (preview t s)
+let isn't o s =
+  Option.is_none (preview o s)
 
 let affine_traversal destruct update =
   let op acont s tcont =
@@ -78,8 +78,8 @@ let affine_traversal destruct update =
       ~ok:(fun x -> acont x (fun b -> tcont (update s b)))
   in { op }
 
-let matching t s =
-  app t (fun a _bcont -> Result.ok a) s (fun t -> Result.error t)
+let matching o s =
+  app o (fun a _bcont -> Result.ok a) s (fun t -> Result.error t)
 
 let to_ sa =
   let op acont s _tcont =
@@ -88,8 +88,8 @@ let to_ sa =
 
 let to_' sa () = to_ sa
 
-let get t s =
-  app t Fun.const s (fun _ -> assert false)
+let get o s =
+  app o Fun.const s (fun _ -> assert false)
 
 let prism construct destruct =
   let op acont s tcont =
@@ -117,14 +117,14 @@ let iso sa bt =
 module O = struct
   let (//) f g () = { op = fun z -> app f (app g z) }
 
-  let (.%[]) s t =
-    get t s
+  let (.%[]) s o =
+    get o s
 
-  let (.%[]<-) s t v =
-    set t v s
+  let (.%[]<-) s o v =
+    set o v s
 
-  let (%~) t f s =
-    over t f s
+  let (%~) o f s =
+    over o f s
 end
 
 include O
