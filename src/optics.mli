@@ -3,19 +3,19 @@
 (** {2:kind Optic kind} *)
 (** Types representing optics hierarchy. *)
 
-type setter = [`Setter]
-(** Tag for {!section:setter}. *)
-
 type getter = [`Getter]
 (** Tag for {!section:getter}. *)
 
-type lens = [setter|getter|`Lens]
-(** Tag for {!section:lens}. *)
+type setter = [`Setter]
+(** Tag for {!section:setter}. *)
 
 type prism = [setter|`Prism]
 (** Tag for {!section:prism}. *)
 
-type iso = [lens|prism|`Iso]
+type lens = [getter|setter|`Lens]
+(** Tag for {!section:lens}. *)
+
+type iso = [prism|lens|`Iso]
 (** Tag for {!section:iso}. *)
 
 
@@ -33,11 +33,6 @@ type ('k, 's, 'a) _t' = ('k, 's, 's, 'a, 'a) _t
 
 type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
 (** Type synonym for type-preserving optics + eta-expansion. *)
-
-(** {1:iso Isomorphism} *)
-
-val iso : ('s -> 'a) -> ('b -> 't) -> ([< iso], 's, 't, 'a, 'b) _t
-(** Build an iso from a pair of inverse functions. *)
 
 
 (** {1:getter Getter} *)
@@ -61,12 +56,6 @@ val set : ([> setter], 's, 't, 'a, 'b) t -> 'b -> 's -> 't
 (** Apply a setter. *)
 
 
-(** {1:lens Lens} *)
-
-val lens   : ('s -> 'a) -> ('s -> 'b -> 't) -> ([< lens], 's, 't, 'a, 'b) _t
-(** Build a lens from a getter and a setter. *)
-
-
 (** {1:prism Prism} *)
 
 val prism  : ('b -> 't) -> ('s -> ('a, 't) Result.t) -> ([< prism], 's, 't, 'a, 'b) _t
@@ -74,6 +63,19 @@ val prism  : ('b -> 't) -> ('s -> ('a, 't) Result.t) -> ([< prism], 's, 't, 'a, 
 
 val prism' : ('b -> 's) -> ('s ->       'a Option.t) -> ([< prism], 's, 's, 'a, 'b) _t
 (** Build a prism from a constructor and a cast function. *)
+
+
+(** {1:lens Lens} *)
+
+val lens   : ('s -> 'a) -> ('s -> 'b -> 't) -> ([< lens], 's, 't, 'a, 'b) _t
+(** Build a lens from a getter and a setter. *)
+
+
+(** {1:iso Isomorphism} *)
+
+val iso : ('s -> 'a) -> ('b -> 't) -> ([< iso], 's, 't, 'a, 'b) _t
+(** Build an iso from a pair of inverse functions. *)
+
 
 (** {1 Operators} *)
 

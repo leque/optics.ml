@@ -3,11 +3,11 @@
    plus eta expansion
    https://stackoverflow.com/questions/29187287/sneaking-lenses-and-cps-past-the-value-restriction
    *)
-type setter = [`Setter]
 type getter = [`Getter]
-type lens = [setter|getter|`Lens]
+type setter = [`Setter]
 type prism = [setter|`Prism]
-type iso = [lens|prism|`Iso]
+type lens = [getter|setter|`Lens]
+type iso = [prism|lens|`Iso]
 
 type (+'k, -'s, +'t, +'a, -'b) _t =
   { op : 'r. ('a -> ('b -> 'r) -> 'r) -> ('s -> ('t -> 'r) -> 'r) }
@@ -19,10 +19,13 @@ type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
 
 let app t = (t ()).op
 
-let iso sa bt =
-  let op acont s tcont =
-    acont (sa s) (fun b -> tcont (bt b))
-  in { op }
+let uncps (type b r) : ('a -> (b -> r) -> r) -> ('a -> b) =
+  fun f a ->
+  let exception Return of b in
+  try
+    ignore (f a (fun b -> raise (Return b)) : r);
+    assert false
+  with Return b -> b
 
 let to_ sa () =
   let op acont s _tcont =
@@ -31,14 +34,6 @@ let to_ sa () =
 
 let get t s =
   app t Fun.const s (fun _ -> assert false)
-
-let uncps (type b r) : ('a -> (b -> r) -> r) -> ('a -> b) =
-  fun f a ->
-  let exception Return of b in
-  try
-    ignore (f a (fun b -> raise (Return b)) : r);
-    assert false
-  with Return b -> b
 
 let sets f () =
   let op acont s tcont =
@@ -52,11 +47,6 @@ let over t f s =
 let set t v s =
   over t (Fun.const v) s
 
-let lens get set =
-  let op acont s tcont =
-    acont (get s) (fun b -> tcont (set s b))
-  in { op }
-
 let prism construct destruct =
   let op acont s tcont =
     Result.fold (destruct s)
@@ -64,11 +54,21 @@ let prism construct destruct =
       ~ok:(fun x -> acont x (fun b -> tcont (construct b)))
   in { op }
 
-let prism' construct destruct =
+let prism' construct cast =
   prism construct (fun s ->
-      match destruct s with
+      match cast s with
       | Some x -> Result.ok x
       | None -> Result.error s)
+
+let lens get set =
+  let op acont s tcont =
+    acont (get s) (fun b -> tcont (set s b))
+  in { op }
+
+let iso sa bt =
+  let op acont s tcont =
+    acont (sa s) (fun b -> tcont (bt b))
+  in { op }
 
 module O = struct
   let (//) f g () = { op = fun z -> app f (app g z) }
