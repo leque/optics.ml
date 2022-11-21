@@ -97,6 +97,8 @@ let to_' sa () = to_ sa
 let get o s =
   app o Fun.const s (fun _ -> assert false)
 
+let view = get
+
 let prism construct destruct =
   let op acont s tcont =
     Result.fold (destruct s)

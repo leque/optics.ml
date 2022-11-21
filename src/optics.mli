@@ -104,6 +104,9 @@ val to_'  : ('s -> 'a) -> ([< getter], 's, 'a) t'
 val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
 (** Get the value pointed to by a getter. *)
 
+val view : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
+(** An alias to {!val:get}. *)
+
 
 (** {1:prism Prism} *)
 
