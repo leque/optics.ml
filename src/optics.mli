@@ -40,8 +40,9 @@ type ('k, 's, 'a) _t' = ('k, 's, 's, 'a, 'a) _t
 type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
 (** Type synonym for type-preserving optics + eta-expansion. *)
 
+(** {1 Optics} *)
 
-(** {1:setter Setter} *)
+(** {2:setter Setter} *)
 
 val sets : (('a -> 'b) -> 's -> 't) -> ([< setter], 's, 't, 'a, 'b) _t
 (** Build a setter from a function to modify the element(s). *)
@@ -56,7 +57,7 @@ val set : ([> setter], 's, 't, 'a, 'b) t -> 'b -> 's -> 't
 (** Apply a setter. *)
 
 
-(** {1:afold Affine Fold} *)
+(** {2:afold Affine Fold} *)
 
 val affine_fold : ('s -> 'a Option.t) -> ([< affine_fold], 's, 'a) _t'
 (** Build an affine fold from a partial function. *)
@@ -82,7 +83,7 @@ val isn't : ([> affine_fold], 's, 'a) t' -> 's -> bool
 val afailing : ([> affine_fold], 's, 'a) t' -> ([> affine_fold], 's, 'a) t' -> ([< affine_fold], 's, 'a) t'
 (** Try the first affine fold. If it returns no entry, try the second one. *)
 
-(** {1:atraversal Affine Traversal} *)
+(** {2:atraversal Affine Traversal} *)
 
 val affine_traversal :
   ('s -> ('a, 't) Result.t) -> ('s -> 'b -> 't) -> ([< affine_traversal], 's, 't, 'a, 'b) _t
@@ -93,7 +94,7 @@ val matching : ([> affine_traversal], 's, 't, 'a, 'b) t -> 's -> ('a, 't) Result
     or return the original value while allowing the type to change if it does not match. *)
 
 
-(** {1:getter Getter} *)
+(** {2:getter Getter} *)
 
 val to_  : ('s -> 'a) -> ([< getter], 's, 'a) _t'
 (** Build a getter from a function. *)
@@ -108,7 +109,7 @@ val view : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
 (** An alias to {!val:get}. *)
 
 
-(** {1:prism Prism} *)
+(** {2:prism Prism} *)
 
 val prism  : ('b -> 't) -> ('s -> ('a, 't) Result.t) -> ([< prism], 's, 't, 'a, 'b) _t
 (** Build a prism from a constructor and a destructor. *)
@@ -117,13 +118,13 @@ val prism' : ('b -> 's) -> ('s ->       'a Option.t) -> ([< prism], 's, 's, 'a, 
 (** Build a prism from a constructor and a cast function. *)
 
 
-(** {1:lens Lens} *)
+(** {2:lens Lens} *)
 
 val lens   : ('s -> 'a) -> ('s -> 'b -> 't) -> ([< lens], 's, 't, 'a, 'b) _t
 (** Build a lens from a getter and a setter. *)
 
 
-(** {1:iso Isomorphism} *)
+(** {2:iso Isomorphism} *)
 
 val iso : ('s -> 'a) -> ('b -> 't) -> ([< iso], 's, 't, 'a, 'b) _t
 (** Build an iso from a pair of inverse functions. *)
