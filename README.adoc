@@ -24,7 +24,7 @@ Error: This expression has type
        but an expression was expected of type
          ([> getter ] as 'd, 'e, 'f, 'g, 'h) t =
            unit -> ('d, 'e, 'f, 'g, 'h) Optics._t
-       Type 'a = [< `Prism | `Setter ] is not compatible with type
-         'd = [> `Getter ] 
+       Type 'a = [< `Affine_fold | `Affine_traversal | `Prism | `Setter ]
+       is not compatible with type 'd = [> `Affine_fold | `Getter ] 
        The first variant type does not allow tag(s) `Getter
 ```
