@@ -79,6 +79,9 @@ val filtered' : ('a -> bool) -> ([< affine_fold], 'a, 'a) t'
 val isn't : ([> affine_fold], 's, 'a) t' -> 's -> bool
 (** Test whether this affine fold does not match. *)
 
+val afailing : ([> affine_fold], 's, 'a) t' -> ([> affine_fold], 's, 'a) t' -> ([< affine_fold], 's, 'a) t'
+(** Try the first affine fold. If it returns no entry, try the second one. *)
+
 (** {1:atraversal Affine Traversal} *)
 
 val affine_traversal :

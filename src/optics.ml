@@ -71,6 +71,12 @@ let filtered' p () = filtered p
 let isn't o s =
   Option.is_none (preview o s)
 
+let afailing o1 o2 =
+  affine_fold' (fun s ->
+      match preview o1 s with
+      | Some _ as x -> x
+      | None -> preview o2 s)
+
 let affine_traversal destruct update =
   let op acont s tcont =
     Result.fold (destruct s)
