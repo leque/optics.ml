@@ -6,18 +6,23 @@ An experimental optic library for OCaml.
 
 ```ocaml
 % dune utop
-# open Optics;;
-# get _1 (42, 3.14);;
+utop # open Optics;;
+utop # get _1 (42, 3.14);;
 - : int = 42
-# get (_2 // _1) (42, (3.14, "foobar"));;
+utop # (42, (3.14, "foobar")) |> get (_2 // _1);;
 - : float = 3.14
-# set _Some 3.14 (Some 42);;
-- : float option = Option.Some 3.14
-# set _Some 3.14 None;;
-- : float option = Option.None
-# (Some [1; 2; 3], 3.14) |> (_1 // _Some // sets' List.map) %~ succ;;
+utop # (42, (3.14, "foobar")).%[_2 // _1];;
+- : float = 3.14
+utop # set _Some "foobar" (Some 42);;
+- : string option = Option.Some "foobar"
+utop # (42, (None, "foobar")).%[_2 // _1 // _Some] <- 0;;
+- : int * (int option * string) = (42, (Option.None, "foobar"))
+utop # (Some [1; 2; 3], 3.14) |> _1 // _Some // sets' List.map %~ succ;;
 - : int list option * float = (Option.Some [2; 3; 4], 3.14)
-# get _Some;;
+utop # _Some // to_' List.length;;
+- : (_[< `Affine_fold ], '_weak1 list option, '_weak1 list option, int, int) t
+= <fun>
+utop # get _Some;;
 Error: This expression has type
          ([< prism ] as 'a, 'b option, 'c option, 'b, 'c) t =
            unit -> ('a, 'b option, 'c option, 'b, 'c) Optics._t
