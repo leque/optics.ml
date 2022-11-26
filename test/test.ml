@@ -23,7 +23,7 @@ let%expect_test _ =
 let%expect_test _ =
   let is_positive n = n > 0 in
   let is_negative n = n < 0 in
-  let o () = afailing (filtered' is_positive) (filtered' is_negative) () in
+  let o () = afailing (filtered' is_positive) (filtered' is_negative) in
   print_string @@ [%derive.show: int option list]
   begin
     [ ( 0, "hello") |> preview (_1 // o)
