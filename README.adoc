@@ -1,6 +1,6 @@
 # optics.ml
 
-An experimental optic library for OCaml.
+An experimental optics library for OCaml.
 
 ## Usage
 
@@ -32,4 +32,45 @@ Error: This expression has type
        Type 'a = [< `Affine_fold | `Affine_traversal | `Prism | `Setter ]
        is not compatible with type 'd = [> `Affine_fold | `Getter ] 
        The first variant type does not allow tag(s) `Getter
+```
+
+## Optics and weak polymorphism
+
+Due to the value restriction, optics created with function application
+has a weakly polymorphic type.
+
+```ocaml
+utop # sets List.map;;
+- : (_[< setter ], '_weak2 list, '_weak3 list, '_weak2, '_weak3) Optics._t =
+<abstr>
+```
+
+So, for example, if we want a polymorphic `List.map` setter, we need to wrap it in a thunk:
+
+```ocaml
+utop # let _List_map () = sets List.map;;
+utop # _List_map;;
+- : unit -> ([< setter ], 'a list, 'b list, 'a, 'b) Optics._t = <fun>
+```
+
+This library exports optics wrapped in a thunk (`unit -> _ Optics.\_t`) as `_ Optics.t` and
+defines optics operations over them.
+There are some functions which directly create a `_ Optics.t` value, whose name is suffixed by `'`.
+If you want to create an `_ Optics.t` value inline, these funciton would be a handy choice.
+
+```ocaml
+utop # [1;2;3] |> set _List_map 1;;
+- : int list = [1; 1; 1]
+utop # [1;2;3] |> set (sets' List.map) 1;;
+- : int list = [1; 1; 1]
+```
+
+NB: Optics composition `(//)` has no raw-optics-returning variants.
+So, if you want to bind a variable by optics composed with `(//)`,
+you need to eta-expand it.
+
+```ocaml
+utop # let _1_2 () = () |> _1 // _2;;
+utop # _1_2;;
+- : unit -> ([< lens ], ('a * 'b) * 'c, ('a * 'd) * 'c, 'b, 'd) Optics._t =
 ```
