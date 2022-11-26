@@ -32,13 +32,13 @@ type ('k, -'s, +'t, +'a, -'b) _t
     ['k] identifies the particular {{!section:kind} optic kind}. *)
 
 type ('k, -'s, +'t, +'a, -'b) t = unit -> ('k, 's, 't, 'a, 'b) _t
-(** Eta-expanded type synonym to avoid value restriction. *)
+(** Type synonym for optics wrapped in a thunk to avoid the value restriction. *)
 
 type ('k, 's, 'a) _t' = ('k, 's, 's, 'a, 'a) _t
 (** Type synonym for type-preserving optics. *)
 
 type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
-(** Type synonym for type-preserving optics + eta-expansion. *)
+(** Type synonym for type-preserving optics wrapped in a thunk. *)
 
 (** {1 Optics} *)
 
@@ -48,7 +48,7 @@ val sets : (('a -> 'b) -> 's -> 't) -> ([< setter], 's, 't, 'a, 'b) _t
 (** Build a setter from a function to modify the element(s). *)
 
 val sets' : (('a -> 'b) -> 's -> 't) -> ([< setter], 's, 't, 'a, 'b) t
-(** Eta-expanded version of {!val:sets}. *)
+(** Thunk-wrapping variant of {!val:sets}. *)
 
 val over : ([> setter], 's, 't, 'a, 'b) t -> ('a -> 'b) -> ('s -> 't)
 (** Apply a setter as a modifier. *)
@@ -63,7 +63,7 @@ val affine_fold : ('s -> 'a Option.t) -> ([< affine_fold], 's, 'a) _t'
 (** Build an affine fold from a partial function. *)
 
 val affine_fold' : ('s -> 'a Option.t) -> ([< affine_fold], 's, 'a) t'
-(** Eta-expanded version of {!val:affine_fold}. *)
+(** Thunk-wrapping variant of {!val:affine_fold}. *)
 
 val preview : ([> affine_fold], 's, 'a) t' -> 's -> 'a Option.t
 (** Retrieve the value targeted by an affine fold. *)
@@ -75,7 +75,7 @@ val filtered : ('a -> bool) -> ([< affine_fold], 'a, 'a) _t'
 (** Filter result(s) of a fold that don't satisfy a predicate. *)
 
 val filtered' : ('a -> bool) -> ([< affine_fold], 'a, 'a) t'
-(** Eta-expanded version of {!val:filtered}. *)
+(** Thunk-wrapping variant of {!val:filtered}. *)
 
 val isn't : ([> affine_fold], 's, 'a) t' -> 's -> bool
 (** Test whether this affine fold does not match. *)
@@ -84,7 +84,7 @@ val afailing : ([> affine_fold], 's, 'a) t' -> ([> affine_fold], 's, 'a) t' -> (
 (** Try the first affine fold. If it returns no entry, try the second one. *)
 
 val afailing' : ([> affine_fold], 's, 'a) t' -> ([> affine_fold], 's, 'a) t' -> ([< affine_fold], 's, 'a) t'
-(** Eta-expanded version of {!val:afailing}. *)
+(** Thunk-wrapping variant of {!val:afailing}. *)
 
 (** {2:atraversal Affine Traversal} *)
 
@@ -103,7 +103,7 @@ val to_  : ('s -> 'a) -> ([< getter], 's, 'a) _t'
 (** Build a getter from a function. *)
 
 val to_'  : ('s -> 'a) -> ([< getter], 's, 'a) t'
-(** Eta-expanded version of {!val:to_}. *)
+(** Thunk-wrapping variant of {!val:to_}. *)
 
 val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
 (** Get the value pointed to by a getter. *)
