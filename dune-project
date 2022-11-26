@@ -12,7 +12,9 @@
  (name optics)
  (synopsis "an experimental optic library for OCaml")
  (depends
-   ;; for Extended indexing operators
-   (ocaml (>= "4.06"))
-  dune
-  result))
+  ;; for Extended indexing operators
+  (ocaml (>= "4.06"))
+  (ppx_expect :test)
+  (ppx_deriving :test)
+   dune
+   result))

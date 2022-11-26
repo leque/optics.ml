@@ -8,6 +8,8 @@ homepage: "https://github.com/leque/optics.ml"
 bug-reports: "https://github.com/leque/optics.ml/issues"
 depends: [
   "ocaml" {>= "4.06"}
+  "ppx_expect" {test}
+  "ppx_deriving" {test}
   "dune" {>= "3.4"}
   "result"
   "odoc" {with-doc}
