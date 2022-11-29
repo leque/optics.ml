@@ -52,6 +52,27 @@ let%expect_test "preview lens" =
     ("hello", "world!") |> preview _1
   end; [%expect {| (Some "hello") |}]
 
+let%expect_test "is filtered" =
+  let is_positive x = x > 0 in
+  let _positive () = filtered is_positive in
+  print_string @@ [%derive.show: bool list]
+  begin
+    [ ( 0, "hello") |> is (_1 // _positive)
+    ; ( 1, "hello") |> is (_1 // _positive)
+    ; (-1, "hello") |> is (_1 // _positive)
+    ]
+  end; [%expect {| [false; true; false] |}]
+
+let%expect_test "is prism" =
+  print_string @@ [%derive.show: bool list]
+  begin
+    [ ("hello", Some "world!") |> is (_2 // _Some)
+    ; ("hello", None) |> is (_2 // _Some)
+    ; ("hello", Some "world!") |> isn't (_2 // _Some)
+    ; ("hello", None) |> isn't (_2 // _Some)
+    ]
+  end; [%expect {| [true; false; false; true] |}]
+
 let%expect_test "matching lens" =
   print_string @@ [%derive.show: (string, string * string) result]
   begin

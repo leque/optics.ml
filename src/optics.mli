@@ -77,6 +77,9 @@ val filtered : ('a -> bool) -> ([< affine_fold], 'a, 'a) _t'
 val filtered' : ('a -> bool) -> ([< affine_fold], 'a, 'a) t'
 (** Thunk-wrapping variant of {!val:filtered}. *)
 
+val is : ([> affine_fold], 's, 'a) t' -> 's -> bool
+(** Test whether this affine fold matches. *)
+
 val isn't : ([> affine_fold], 's, 'a) t' -> 's -> bool
 (** Test whether this affine fold does not match. *)
 

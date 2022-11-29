@@ -68,8 +68,11 @@ let filtered p =
 
 let filtered' p () = filtered p
 
+let is o s =
+  Option.is_some (preview o s)
+
 let isn't o s =
-  Option.is_none (preview o s)
+  not (is o s)
 
 let afailing o1 o2 =
   affine_fold (fun s ->
