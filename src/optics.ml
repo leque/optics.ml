@@ -99,8 +99,11 @@ let to_ sa =
 
 let to_' sa () = to_ sa
 
+let views o f s =
+  app o (fun a _bcont -> f a) s (fun _ -> assert false)
+
 let get o s =
-  app o Fun.const s (fun _ -> assert false)
+  views o Fun.id s
 
 let view = get
 

@@ -114,6 +114,9 @@ val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
 val view : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
 (** An alias to {!val:get}. *)
 
+val views : ([> getter], 's, 't, 'a, 'b) t -> ('a -> 'r) -> 's -> 'r
+(** View the function of the value pointed to by a getter. *)
+
 
 (** {2:prism Prism} *)
 
