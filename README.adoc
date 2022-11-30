@@ -34,6 +34,45 @@ Error: This expression has type
        The first variant type does not allow tag(s) `Getter
 ```
 
+## Optics Hierarchy
+
+```mermaid
+classDiagram
+
+class setter {
+  + over
+  + set
+}
+
+class affine_fold {
+  + preview
+  + previews
+  + is
+  + isn't
+}
+
+setter      <|-- affine_traversal
+affine_fold <|-- affine_traversal
+class affine_traversal {
+  + matching
+}
+
+affine_fold <|-- getter
+class getter {
+  + get
+  + view
+  + views
+}
+
+affine_traversal <|-- prism
+
+getter <|-- lens
+affine_traversal <|-- lens
+
+prism <|-- iso
+lens <|-- iso
+```
+
 ## Optics and weak polymorphism
 
 Due to the value restriction, optics created with function application
