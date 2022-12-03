@@ -25,7 +25,7 @@ let uncps (type b r) : ('a -> (b -> r) -> r) -> ('a -> b) =
   fun f a ->
   let exception Return of b in
   try
-    ignore (f a (fun b -> raise (Return b)) : r);
+    ignore (f a (fun b -> raise_notrace (Return b)) : r);
     assert false
   with Return b -> b
 
