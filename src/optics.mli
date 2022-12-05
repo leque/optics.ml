@@ -166,6 +166,11 @@ module O : sig
   (** Infix version of {!val:over}.
 
       [x |> o %~ f] === [over o f x].
+
+      NB: Thanks to the operator precedence and the associativity,
+      we can write [over (o1 // o2) f x] as [x |> o1 // o2 %~ f],
+      since [(//)] and [(%~)] have the same precedence,
+      bind tighter than [(|>)], and are left associative.
   *)
 end
 
