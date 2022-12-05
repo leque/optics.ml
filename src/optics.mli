@@ -1,4 +1,19 @@
 (** {1 Types} *)
+(** {2 Optic type} *)
+
+type ('k, -'s, +'t, +'a, -'b) _t
+(** Type of the whole family of optics.
+    ['k] identifies the particular {{!section:kind} optic kind}. *)
+
+type ('k, -'s, +'t, +'a, -'b) t = unit -> ('k, 's, 't, 'a, 'b) _t
+(** Type synonym for optics wrapped in a thunk to avoid the value restriction. *)
+
+type ('k, 's, 'a) _t' = ('k, 's, 's, 'a, 'a) _t
+(** Type synonym for type-preserving optics. *)
+
+type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
+(** Type synonym for type-preserving optics wrapped in a thunk. *)
+
 
 (** {2:kind Optic kind} *)
 (** Types representing optics hierarchy. *)
@@ -24,21 +39,6 @@ type lens = [getter|affine_traversal|`Lens]
 type iso = [prism|lens|`Iso]
 (** Tag for {!section:iso}. *)
 
-
-(** {2 Optic type} *)
-
-type ('k, -'s, +'t, +'a, -'b) _t
-(** Type of the whole family of optics.
-    ['k] identifies the particular {{!section:kind} optic kind}. *)
-
-type ('k, -'s, +'t, +'a, -'b) t = unit -> ('k, 's, 't, 'a, 'b) _t
-(** Type synonym for optics wrapped in a thunk to avoid the value restriction. *)
-
-type ('k, 's, 'a) _t' = ('k, 's, 's, 'a, 'a) _t
-(** Type synonym for type-preserving optics. *)
-
-type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
-(** Type synonym for type-preserving optics wrapped in a thunk. *)
 
 (** {1 Optics} *)
 

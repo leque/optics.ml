@@ -3,14 +3,6 @@
    plus eta expansion
    https://stackoverflow.com/questions/29187287/sneaking-lenses-and-cps-past-the-value-restriction
    *)
-type setter = [`Setter]
-type affine_fold = [`Affine_fold]
-type affine_traversal = [setter|affine_fold|`Affine_traversal]
-type getter = [affine_fold|`Getter]
-type prism = [affine_traversal|`Prism]
-type lens = [getter|affine_traversal|`Lens]
-type iso = [prism|lens|`Iso]
-
 type ('k, -'s, +'t, +'a, -'b) _t =
   { op : 'r. ('a -> ('b -> 'r) -> 'r) -> ('s -> ('t -> 'r) -> 'r) }
 
@@ -18,6 +10,14 @@ type ('k, -'s, +'t, +'a, -'b) t = unit -> ('k, 's, 't, 'a, 'b) _t
 
 type ('k, 's, 'a) _t' = ('k, 's, 's, 'a, 'a) _t
 type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
+
+type setter = [`Setter]
+type affine_fold = [`Affine_fold]
+type affine_traversal = [setter|affine_fold|`Affine_traversal]
+type getter = [affine_fold|`Getter]
+type prism = [affine_traversal|`Prism]
+type lens = [getter|affine_traversal|`Lens]
+type iso = [prism|lens|`Iso]
 
 let app o = (o ()).op
 
