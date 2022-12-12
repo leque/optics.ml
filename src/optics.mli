@@ -108,14 +108,14 @@ val to_  : ('s -> 'a) -> ([< getter], 's, 'a) _t'
 val to_'  : ('s -> 'a) -> ([< getter], 's, 'a) t'
 (** Thunk-wrapping variant of {!val:to_}. *)
 
-val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
-(** Get the value pointed to by a getter. *)
-
 val view : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
-(** An alias to {!val:get}. *)
+(** View the value pointed to by a getter. *)
 
 val views : ([> getter], 's, 't, 'a, 'b) t -> ('a -> 'r) -> 's -> 'r
 (** View the function of the value pointed to by a getter. *)
+
+val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
+(** An alias to {!val:view}. *)
 
 
 (** {2:prism Prism} *)

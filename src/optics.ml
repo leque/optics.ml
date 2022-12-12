@@ -102,10 +102,10 @@ let to_' sa () = to_ sa
 let views o f s =
   app o (fun a _bcont -> f a) s (fun _ -> assert false)
 
-let get o s =
+let view o s =
   views o Fun.id s
 
-let view = get
+let get = view
 
 let prism construct destruct =
   let op acont s tcont =
