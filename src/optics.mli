@@ -146,6 +146,14 @@ module O : sig
   val (//) : ('k, 'a, 'b, 'c, 'd) t -> ('k, 'c, 'd, 'e, 'f) t -> ('k, 'a, 'b, 'e, 'f) t
   (** Optics composition. *)
 
+  val (.%?[]) : 's -> ([> affine_fold], 's, 'a) t' -> 'a Option.t
+  (** Index operator version of {!val:preview}.
+
+      [x.%?[o]]
+      === [x |> preview o]
+      === [preview o x].
+  *)
+
   val (.%[]) : 's -> ([> getter], 's, 't, 'a, 'b) t -> 'a
   (** Index operator version of {!val:get}.
 

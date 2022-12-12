@@ -133,6 +133,9 @@ let iso sa bt =
 module O = struct
   let (//) f g () = { op = fun z -> app f (app g z) }
 
+  let (.%?[]) s o =
+    preview o s
+
   let (.%[]) s o =
     get o s
 
