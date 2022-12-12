@@ -32,6 +32,32 @@ Error: This expression has type
        Type 'a = [< `Affine_fold | `Affine_traversal | `Prism | `Setter ]
        is not compatible with type 'd = [> `Affine_fold | `Getter ] 
        The first variant type does not allow tag(s) `Getter
+
+utop # #require "jsonaf";;
+utop # let john =
+  {|
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "isAlive": true,
+  "age": 27
+}
+|}
+  |> Jsonaf.parse
+  |> Base.Or_error.ok_exn
+;;
+val john : Jsonaf_kernel.t =
+  `Object
+    [("firstName", `String "John"); ("lastName", `String "Smith");
+     ("isAlive", `True); ("age", `Number "27")]
+utop # john.%?[Json.(_Object // key "age" // _Int)];;
+- : int option = Option.Some 27
+utop # john.%?[Json.(_Object // key "isAlive" // _Bool)];;
+- : bool option = Option.Some true
+utop # john.%?[Json.(_Object // key "first-name" // _String)];;
+- : Json.t option = Option.None
+utop # john.%?[Json.(_Object // key "firstName" // _String)];;
+- : string option = Option.Some "John"
 ```
 
 ## Optics Hierarchy

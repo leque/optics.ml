@@ -1,0 +1,6 @@
+(library
+ (name json)
+ (libraries optics)
+ (flags :standard)
+ ;; (preprocess (pps sedlex.ppx))
+)
