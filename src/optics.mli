@@ -92,7 +92,9 @@ val afailing' : ([> affine_fold], 's, 'a) t' -> ([> affine_fold], 's, 'a) t' -> 
 (** {2:atraversal Affine Traversal} *)
 
 val affine_traversal :
-  ('s -> ('a, 't) Result.t) -> ('s -> 'b -> 't) -> ([< affine_traversal], 's, 't, 'a, 'b) _t
+  destruct:('s -> ('a, 't) Result.t) ->
+  update:('s -> 'b -> 't) ->
+  ([< affine_traversal], 's, 't, 'a, 'b) _t
 (** Build an affine traversal from a destructor and a setter. *)
 
 val matching : ([> affine_traversal], 's, 't, 'a, 'b) t -> 's -> ('a, 't) Result.t
@@ -120,22 +122,31 @@ val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
 
 (** {2:prism Prism} *)
 
-val prism  : ('b -> 't) -> ('s -> ('a, 't) Result.t) -> ([< prism], 's, 't, 'a, 'b) _t
+val prism :
+  construct:('b -> 't) ->
+  destruct:('s -> ('a, 't) Result.t) ->
+  ([< prism], 's, 't, 'a, 'b) _t
 (** Build a prism from a constructor and a destructor. *)
 
-val prism' : ('b -> 's) -> ('s ->       'a Option.t) -> ([< prism], 's, 's, 'a, 'b) _t
+val prism' :
+  construct:('b -> 's) ->
+  cast:('s -> 'a Option.t) ->
+  ([< prism], 's, 's, 'a, 'b) _t
 (** Build a prism from a constructor and a cast function. *)
 
 
 (** {2:lens Lens} *)
 
-val lens   : ('s -> 'a) -> ('s -> 'b -> 't) -> ([< lens], 's, 't, 'a, 'b) _t
+val lens :
+  get:('s -> 'a) ->
+  set:('s -> 'b -> 't) ->
+  ([< lens], 's, 't, 'a, 'b) _t
 (** Build a lens from a getter and a setter. *)
 
 
 (** {2:iso Isomorphism} *)
 
-val iso : ('s -> 'a) -> ('b -> 't) -> ([< iso], 's, 't, 'a, 'b) _t
+val iso : f:('s -> 'a) -> g:('b -> 't) -> ([< iso], 's, 't, 'a, 'b) _t
 (** Build an iso from a pair of inverse functions. *)
 
 

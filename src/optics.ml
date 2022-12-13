@@ -82,7 +82,7 @@ let afailing o1 o2 =
 
 let afailing' o1 o2 () = afailing o1 o2
 
-let affine_traversal destruct update =
+let affine_traversal ~destruct ~update =
   let op acont s tcont =
     Result.fold (destruct s)
       ~error:tcont
@@ -107,25 +107,25 @@ let view o s =
 
 let get = view
 
-let prism construct destruct =
+let prism ~construct ~destruct =
   let op acont s tcont =
     Result.fold (destruct s)
       ~error:tcont
       ~ok:(fun x -> acont x (fun b -> tcont (construct b)))
   in { op }
 
-let prism' construct cast =
-  prism construct (fun s ->
+let prism' ~construct ~cast =
+  prism ~construct ~destruct:(fun s ->
       match cast s with
       | Some x -> Result.ok x
       | None -> Result.error s)
 
-let lens get set =
+let lens ~get ~set =
   let op acont s tcont =
     acont (get s) (fun b -> tcont (set s b))
   in { op }
 
-let iso sa bt =
+let iso ~f:sa ~g:bt =
   let op acont s tcont =
     acont (sa s) (fun b -> tcont (bt b))
   in { op }
@@ -150,29 +150,29 @@ include O
 
 let id () = { op = Fun.id }
 
-let _1 () = lens fst (fun (_, x) b -> (b, x))
-let _2 () = lens snd (fun (x, _) b -> (x, b))
+let _1 () = lens ~get:fst ~set:(fun (_, x) b -> (b, x))
+let _2 () = lens ~get:snd ~set:(fun (x, _) b -> (x, b))
 
 let _Ok () =
-  prism Result.ok
-    (function
-      | Result.Ok x -> Result.ok x
-      | Result.Error _ as x -> Result.error x)
+  prism ~construct:Result.ok
+    ~destruct:(function
+        | Result.Ok x -> Result.ok x
+        | Result.Error _ as x -> Result.error x)
 
 let _Error () =
-  prism Result.error
-    (function
-      | Result.Error x -> Result.ok x
-      | Result.Ok _ as x -> Result.error x)
+  prism ~construct:Result.error
+    ~destruct:(function
+        | Result.Error x -> Result.ok x
+        | Result.Ok _ as x -> Result.error x)
 
 let _Some () =
-  prism Option.some
-    (function
-      | Some x -> Result.ok x
-      | None as x -> Result.error x)
+  prism ~construct:Option.some
+    ~destruct:(function
+        | Some x -> Result.ok x
+        | None as x -> Result.error x)
 
 let _None () =
-  prism (fun () -> Option.none)
-    (function
-      | None -> Result.ok ()
-      | Some _ as x -> Result.error x)
+  prism ~construct:(fun () -> Option.none)
+    ~destruct:(function
+        | None -> Result.ok ()
+        | Some _ as x -> Result.error x)
