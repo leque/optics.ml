@@ -155,11 +155,11 @@ module O : sig
   *)
 
   val (.%[]) : 's -> ([> getter], 's, 't, 'a, 'b) t -> 'a
-  (** Index operator version of {!val:get}.
+  (** Index operator version of {!val:view}.
 
       [x.%[o]]
-      === [x |> get o]
-      === [get o x].
+      === [x |> view o]
+      === [view o x].
   *)
 
   val (.%[]<-) : 's -> ([> setter], 's, 't, 'a, 'b) t -> 'b -> 't
