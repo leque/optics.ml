@@ -24,16 +24,14 @@ let app o = (o ()).op
 let uncps (type b r) : ('a -> (b -> r) -> r) -> ('a -> b) =
   fun f a ->
   let exception Return of b in
-  try
-    ignore (f a (fun b -> raise_notrace (Return b)) : r);
-    assert false
-  with Return b -> b
+  match f a (fun b -> raise_notrace (Return b)) with
+  | _ -> assert false
+  | exception Return b -> b
 
 let sets f =
   let op acont s tcont =
     tcont (f (uncps acont) s)
-  in
-  { op }
+  in { op }
 
 let sets' f () = sets f
 
