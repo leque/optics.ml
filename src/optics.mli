@@ -169,6 +169,11 @@ val lens :
   ([< lens], 's, 't, 'a, 'b) _t
 (** Build a lens from a getter and a setter. *)
 
+val choosing :
+  left:('k, 'sl, 'tl, 'a, 'b) t ->
+  right:('k, 'sr, 'tr, 'a, 'b) t ->
+  ('k, ('sl, 'sr) Either.t, ('tl, 'tr) Either.t, 'a, 'b) _t
+(** Merge two optics. *)
 
 (** {2:iso Isomorphism} *)
 

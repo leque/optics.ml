@@ -11,6 +11,7 @@ depends: [
   "ppx_expect" {test}
   "ppx_deriving" {test}
   "dune" {>= "3.4"}
+  "either"
   "result"
   "odoc" {with-doc}
 ]

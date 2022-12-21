@@ -17,4 +17,5 @@
   (ppx_expect :test)
   (ppx_deriving :test)
    dune
+   either
    result))

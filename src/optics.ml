@@ -145,6 +145,13 @@ let lens ~get ~set =
     acont (get s) (fun b -> tcont (set s b))
   in { op }
 
+let choosing ~left ~right =
+  let op acont s tcont =
+    match s with
+    | Either.Left l -> app left acont l (fun t -> tcont (Either.Left t))
+    | Either.Right r -> app right acont r (fun t -> tcont (Either.Right t))
+  in { op }
+
 let iso ~f:sa ~g:bt =
   let op acont s tcont =
     acont (sa s) (fun b -> tcont (bt b))
