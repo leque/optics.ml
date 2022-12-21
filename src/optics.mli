@@ -134,6 +134,32 @@ val prism' :
   ([< prism], 's, 's, 'a, 'b) _t
 (** Build a prism from a constructor and a cast function. *)
 
+val only : ?equal:('a -> 'a -> bool) -> 'a -> ([< prism], 'a, unit) _t'
+(** This prism compares for exact equality with a given value. *)
+
+val only' : ?equal:('a -> 'a -> bool) -> 'a -> ([< prism], 'a, unit) t'
+(** Thunk-wrapping variant of {!val:only}. *)
+
+val nearly : f:('a -> bool) -> 'a -> ([< prism], 'a, unit) _t'
+(** This prism compares for approximate equality with a given value and a predicate for testing.
+    {[
+# let nearly_nan () = nearly ~f:Float.is_nan Float.nan;;
+val nearly_nan : unit -> ([< prism ], float, unit) Optics._t' = <fun>
+# 3.14.%?[nearly_nan];;
+- : unit option = Option.None
+# (0.0 /. 0.0).%?[nearly_nan];;
+- : unit option = Option.Some ()
+    ]}
+
+    To comply with the prism laws the arguments you supply to [nearly a p] are somewhat constrained.
+
+    We assume [p x] holds iff [x] ≡ [a]. Under that assumption then this is a valid prism.
+
+    This is useful when working with a type where you can test equality for only a subset of its values, and the prism selects such a value.
+*)
+
+val nearly' : f:('a -> bool) -> 'a -> ([< prism], 'a, unit) t'
+(** Thunk-wrapping variant of {!val:nearly}. *)
 
 (** {2:lens Lens} *)
 
@@ -148,6 +174,63 @@ val lens :
 
 val iso : f:('s -> 'a) -> g:('b -> 't) -> ([< iso], 's, 't, 'a, 'b) _t
 (** Build an iso from a pair of inverse functions. *)
+
+val non : ?equal:('a -> 'a -> bool) -> 'a -> ([< iso], 'a option, 'a) _t'
+(**
+   If [v : a] and [a' = a ∖ {v}], then [non v] is an isomorphism from [a' option] to [a].
+
+   Keep in mind this is only a real isomorphism if you treat the domain as being [(a ∖ {v}) option].
+
+   {!val:non} lets you "relabel" a [option] by equating [None] to an arbitrary value (which you can choose):
+   {[
+# let non0 () = non 0;;
+val non0 : unit -> ([< iso ], int option, int) Optics._t' = <fun>
+# (Some 1).%[non0];;
+- : int = 1
+# None.%[non0];;
+- : int = 0
+   ]}
+
+   The most useful thing about {!val:non} is that relabeling also works in other direction. If you try to {!val:set} the "forbidden" value, it will be turned to [None]:
+   {[
+# (Some 1).%[non0] <- 0;;
+- : int option = None
+   ]}
+   Setting anything else works just fine:
+   {[
+# (Some 1).%[non0] <- 42;;
+- : int option = Some 42
+   ]}
+   Same happens if you try to modify a value:
+   {[
+# Some 1 |> non0 %~ pred;;
+- : int option = None
+# Some 1 |> non0 %~ succ;;
+- : int option = Some 2
+   ]}
+*)
+
+val non' : ?equal:('a -> 'a -> bool) -> 'a -> ([< iso], 'a option, 'a) t'
+(**
+   Thunk-wrapping variant of {!val:non}.
+*)
+
+val anon : f:('a -> bool) -> 'a -> ([< iso], 'a option, 'a) _t'
+(**
+   [anon a p] generalizes {!val:non} a to take any value and a predicate.
+
+   {[
+# let non_nan () = anon ~f:Float.is_nan Float.nan;;
+val non_nan : unit -> ([< iso ], float option, float) Optics._t' = <fun>
+# Some 0.0 |> non_nan %~ (Float.div 1.0);;
+- : float option = Some infinity
+# Some 0.0 |> non_nan %~ (Float.div 0.0);;
+- : float option = None
+   ]}
+*)
+
+val anon' : f:('a -> bool) -> 'a -> ([< iso], 'a option, 'a) t'
+(** Thunk-wrapping variant of {!val:anon}. *)
 
 
 (** {1 Operators} *)

@@ -118,6 +118,28 @@ let prism' ~construct ~cast =
       | Some x -> Result.ok x
       | None -> Result.error s)
 
+let only ?(equal = (=)) x =
+  prism' ~construct:(fun () -> x)
+    ~cast:(fun a ->
+        if equal a x then
+          Some ()
+        else
+          None)
+
+let only' ?(equal = (=)) x () =
+  only ~equal x
+
+let nearly ~f x =
+  prism' ~construct:(fun () -> x)
+    ~cast:(fun a ->
+        if f a then
+          Some ()
+        else
+          None)
+
+let nearly' ~f x () =
+  nearly ~f x
+
 let lens ~get ~set =
   let op acont s tcont =
     acont (get s) (fun b -> tcont (set s b))
@@ -127,6 +149,30 @@ let iso ~f:sa ~g:bt =
   let op acont s tcont =
     acont (sa s) (fun b -> tcont (bt b))
   in { op }
+
+let non ?(equal = (=)) x =
+  iso
+    ~f:(fun opt -> Option.value opt ~default:x)
+    ~g:(fun a ->
+      if equal a x then
+        None
+      else
+        Some a)
+
+let non' ?(equal = (=)) x () =
+  non ~equal x
+
+let anon ~f x =
+  iso
+    ~f:(fun opt -> Option.value opt ~default:x)
+    ~g:(fun a ->
+      if f a then
+        None
+      else
+        Some a)
+
+let anon' ~f x () =
+  anon ~f x
 
 module O = struct
   let (//) f g () = { op = fun z -> app f (app g z) }
