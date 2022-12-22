@@ -13,28 +13,28 @@ type t =
 
 let _Null : ([< prism], t, unit) Optics.t'
   = fun () ->
-    prism' ~construct:(fun () -> `Null)
+    prism_ ~construct:(fun () -> `Null)
       ~cast:(function
           | `Null -> Some ()
           | _ -> None)
 
 let _False : ([< prism], t, unit) Optics.t'
   = fun () ->
-    prism' ~construct:(fun () -> `False)
+    prism_ ~construct:(fun () -> `False)
       ~cast:(function
           | `False -> Some ()
           | _ -> None)
 
 let _True : ([< prism], t, unit) Optics.t'
   = fun () ->
-    prism' ~construct:(fun () -> `True)
+    prism_ ~construct:(fun () -> `True)
       ~cast:(function
           | `True -> Some ()
           | _ -> None)
 
 let _Bool : ([< prism], t, bool) Optics.t'
   = fun () ->
-    prism' ~construct:(fun b -> if b then `True else `False)
+    prism_ ~construct:(fun b -> if b then `True else `False)
       ~cast:(function
           | `True -> Some true
           | `False -> Some false
@@ -42,35 +42,35 @@ let _Bool : ([< prism], t, bool) Optics.t'
 
 let _String : ([< prism], t, string) Optics.t'
   = fun () ->
-    prism' ~construct:(fun x -> `String x)
+    prism_ ~construct:(fun x -> `String x)
       ~cast:(function
           | `String x -> Some x
           | _ -> None)
 
 let _Number : ([< prism], t, string) Optics.t'
   = fun () ->
-    prism' ~construct:(fun x -> `Number x)
+    prism_ ~construct:(fun x -> `Number x)
       ~cast:(function
           | `Number x -> Some x
           | _ -> None)
 
 let _Int : ([< prism], t, int) Optics.t'
   = fun () ->
-    prism' ~construct:(fun x -> `Number (Int.to_string x))
+    prism_ ~construct:(fun x -> `Number (Int.to_string x))
       ~cast:(function
           | `Number x -> int_of_string_opt x
           | _ -> None)
 
 let _Float : ([< prism], t, float) Optics.t'
   = fun () ->
-    prism' ~construct:(fun x -> `Number (Float.to_string x))
+    prism_ ~construct:(fun x -> `Number (Float.to_string x))
       ~cast:(function
           | `Number x -> float_of_string_opt x
           | _ -> None)
 
 let _Object : ([< prism], t, (string * t) List.t) Optics.t'
   = fun () ->
-    prism' ~construct:(fun kvs -> `Object kvs)
+    prism_ ~construct:(fun kvs -> `Object kvs)
       ~cast:(function
           | `Object kvs -> Some kvs
           | _ -> None)
@@ -86,7 +86,7 @@ let key : string -> ([< affine_traversal], (string * t) List.t, t) Optics.t'
 
 let _Array : ([< prism], t, t List.t) Optics.t'
   = fun () ->
-    prism' ~construct:(fun vs -> `Array vs)
+    prism_ ~construct:(fun vs -> `Array vs)
       ~cast:(function
           | `Array vs -> Some vs
           | _ -> None)

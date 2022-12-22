@@ -112,14 +112,14 @@ let prism ~construct ~destruct =
       ~ok:(fun x -> acont x (fun b -> tcont (construct b)))
   in { op }
 
-let prism' ~construct ~cast =
+let prism_ ~construct ~cast =
   prism ~construct ~destruct:(fun s ->
       match cast s with
       | Some x -> Result.ok x
       | None -> Result.error s)
 
 let only ?(equal = (=)) x =
-  prism' ~construct:(fun () -> x)
+  prism_ ~construct:(fun () -> x)
     ~cast:(fun a ->
         if equal a x then
           Some ()
@@ -130,7 +130,7 @@ let only' ?(equal = (=)) x () =
   only ~equal x
 
 let nearly ~f x =
-  prism' ~construct:(fun () -> x)
+  prism_ ~construct:(fun () -> x)
     ~cast:(fun a ->
         if f a then
           Some ()

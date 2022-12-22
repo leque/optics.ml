@@ -128,7 +128,7 @@ val prism :
   ([< prism], 's, 't, 'a, 'b) _t
 (** Build a prism from a constructor and a destructor. *)
 
-val prism' :
+val prism_ :
   construct:('b -> 's) ->
   cast:('s -> 'a Option.t) ->
   ([< prism], 's, 's, 'a, 'b) _t
