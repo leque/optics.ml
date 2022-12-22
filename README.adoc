@@ -1,6 +1,7 @@
 # optics.ml
 
 An experimental optics library for OCaml.
+See link:https://github.com/janestreet/accessor/[accessor] library for a more comprehensive implementation.
 
 ## Usage
 
