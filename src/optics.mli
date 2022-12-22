@@ -305,3 +305,9 @@ val _Some : ([< prism], 'a Option.t, 'b Option.t, 'a, 'b) t
 
 val _None : ([< prism], 'a Option.t, unit) t'
 (** A Prism that matches on the [None] constructor of [Option.t]. *)
+
+val _Left  : ([< prism], ('a, 'x) Either.t, ('b, 'x) Either.t, 'a, 'b) t
+(** A Prism that matches on the [Left] constructor of [Either.t]. *)
+
+val _Right : ([< prism], ('x, 'a) Either.t, ('x, 'b) Either.t, 'a, 'b) t
+(** A Prism that matches on the [Right] constructor of [Either.t]. *)

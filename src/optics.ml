@@ -227,3 +227,15 @@ let _None () =
     ~destruct:(function
         | None -> Result.ok ()
         | Some _ as x -> Result.error x)
+
+let _Left () =
+  prism ~construct:Either.left
+    ~destruct:(function
+        | Either.Left x -> Result.ok x
+        | Either.Right _ as x -> Result.error x)
+
+let _Right () =
+  prism ~construct:Either.right
+    ~destruct:(function
+        | Either.Right x -> Result.ok x
+        | Either.Left _ as x -> Result.error x)
