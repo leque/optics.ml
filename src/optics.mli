@@ -1,17 +1,21 @@
 (** {1 Types} *)
 (** {2 Optic type} *)
 
-type ('k, -'s, +'t, +'a, -'b) _t
+type ('k, -'s, +'t, +'a, -'b) __t
+
+type ('k, 'outer, 'inner) _t = ('k, 's, 't, 'a, 'b) __t
+    constraint 'outer = 's -> 't
+    constraint 'inner = 'a -> 'b
 (** Type of the whole family of optics.
     ['k] identifies the particular {{!section:kind} optic kind}. *)
 
-type ('k, -'s, +'t, +'a, -'b) t = unit -> ('k, 's, 't, 'a, 'b) _t
+type ('k, 'outer, 'inner) t = unit -> ('k, 'outer, 'inner) _t
 (** Type synonym for optics wrapped in a thunk to avoid the value restriction. *)
 
-type ('k, 's, 'a) _t' = ('k, 's, 's, 'a, 'a) _t
+type ('k, 's, 'a) _t' = ('k, 's -> 's, 'a -> 'a) _t
 (** Type synonym for type-preserving optics. *)
 
-type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
+type ('k, 's, 'a) t'  = ('k, 's -> 's, 'a -> 'a) t
 (** Type synonym for type-preserving optics wrapped in a thunk. *)
 
 
@@ -44,16 +48,16 @@ type iso = [prism|lens|`Iso]
 
 (** {2:setter Setter} *)
 
-val sets : (('a -> 'b) -> 's -> 't) -> ([< setter], 's, 't, 'a, 'b) _t
+val sets : (('a -> 'b) -> 's -> 't) -> ([< setter], 's -> 't, 'a -> 'b) _t
 (** Build a setter from a function to modify the element(s). *)
 
-val sets' : (('a -> 'b) -> 's -> 't) -> ([< setter], 's, 't, 'a, 'b) t
+val sets' : (('a -> 'b) -> 's -> 't) -> ([< setter], 's -> 't, 'a -> 'b) t
 (** Thunk-wrapping variant of {!val:sets}. *)
 
-val over : ([> setter], 's, 't, 'a, 'b) t -> ('a -> 'b) -> ('s -> 't)
+val over : ([> setter], 's -> 't, 'a -> 'b) t -> ('a -> 'b) -> ('s -> 't)
 (** Apply a setter as a modifier. *)
 
-val set : ([> setter], 's, 't, 'a, 'b) t -> 'b -> 's -> 't
+val set : ([> setter], 's -> 't, _ -> 'b) t -> 'b -> 's -> 't
 (** Apply a setter. *)
 
 
@@ -77,16 +81,22 @@ val filtered : ('a -> bool) -> ([< affine_fold], 'a, 'a) _t'
 val filtered' : ('a -> bool) -> ([< affine_fold], 'a, 'a) t'
 (** Thunk-wrapping variant of {!val:filtered}. *)
 
-val is : ([> affine_fold], 's, 'a) t' -> 's -> bool
+val is : ([> affine_fold], 's, _) t' -> 's -> bool
 (** Test whether this affine fold matches. *)
 
-val isn't : ([> affine_fold], 's, 'a) t' -> 's -> bool
+val isn't : ([> affine_fold], 's, _) t' -> 's -> bool
 (** Test whether this affine fold does not match. *)
 
-val afailing : ([> affine_fold], 's, 'a) t' -> ([> affine_fold], 's, 'a) t' -> ([< affine_fold], 's, 'a) _t'
+val afailing :
+  ([> affine_fold], 's, 'a) t' ->
+  ([> affine_fold], 's, 'a) t' ->
+  ([< affine_fold], 's, 'a) _t'
 (** Try the first affine fold. If it returns no entry, try the second one. *)
 
-val afailing' : ([> affine_fold], 's, 'a) t' -> ([> affine_fold], 's, 'a) t' -> ([< affine_fold], 's, 'a) t'
+val afailing' :
+  ([> affine_fold], 's, 'a) t' ->
+  ([> affine_fold], 's, 'a) t' ->
+  ([< affine_fold], 's, 'a) t'
 (** Thunk-wrapping variant of {!val:afailing}. *)
 
 (** {2:atraversal Affine Traversal} *)
@@ -94,10 +104,10 @@ val afailing' : ([> affine_fold], 's, 'a) t' -> ([> affine_fold], 's, 'a) t' -> 
 val affine_traversal :
   destruct:('s -> ('a, 't) Result.t) ->
   update:('s -> 'b -> 't) ->
-  ([< affine_traversal], 's, 't, 'a, 'b) _t
+  ([< affine_traversal], 's -> 't, 'a -> 'b) _t
 (** Build an affine traversal from a destructor and a setter. *)
 
-val matching : ([> affine_traversal], 's, 't, 'a, 'b) t -> 's -> ('a, 't) Result.t
+val matching : ([> affine_traversal], 's -> 't, 'a -> _) t -> 's -> ('a, 't) Result.t
 (** Retrieve the value targeted by an affine traversal
     or return the original value while allowing the type to change if it does not match. *)
 
@@ -110,13 +120,13 @@ val to_  : ('s -> 'a) -> ([< getter], 's, 'a) _t'
 val to_'  : ('s -> 'a) -> ([< getter], 's, 'a) t'
 (** Thunk-wrapping variant of {!val:to_}. *)
 
-val view : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
+val view : ([> getter], 's -> _, 'a -> _) t -> 's -> 'a
 (** View the value pointed to by a getter. *)
 
-val views : ([> getter], 's, 't, 'a, 'b) t -> ('a -> 'r) -> 's -> 'r
+val views : ([> getter], 's -> _, 'a -> _) t -> ('a -> 'r) -> 's -> 'r
 (** View the function of the value pointed to by a getter. *)
 
-val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
+val get : ([> getter], 's -> _, 'a -> _) t -> 's -> 'a
 (** An alias to {!val:view}. *)
 
 
@@ -125,13 +135,13 @@ val get : ([> getter], 's, 't, 'a, 'b) t -> 's -> 'a
 val prism :
   construct:('b -> 't) ->
   destruct:('s -> ('a, 't) Result.t) ->
-  ([< prism], 's, 't, 'a, 'b) _t
+  ([< prism], 's -> 't, 'a -> 'b) _t
 (** Build a prism from a constructor and a destructor. *)
 
 val prism_ :
   construct:('b -> 's) ->
   cast:('s -> 'a Option.t) ->
-  ([< prism], 's, 's, 'a, 'b) _t
+  ([< prism], 's -> 's, 'a -> 'b) _t
 (** Build a prism from a constructor and a cast function. *)
 
 val only : ?equal:('a -> 'a -> bool) -> 'a -> ([< prism], 'a, unit) _t'
@@ -166,18 +176,18 @@ val nearly' : f:('a -> bool) -> 'a -> ([< prism], 'a, unit) t'
 val lens :
   get:('s -> 'a) ->
   set:('s -> 'b -> 't) ->
-  ([< lens], 's, 't, 'a, 'b) _t
+  ([< lens], 's -> 't, 'a -> 'b) _t
 (** Build a lens from a getter and a setter. *)
 
 val choosing :
-  left:('k, 'sl, 'tl, 'a, 'b) t ->
-  right:('k, 'sr, 'tr, 'a, 'b) t ->
-  ('k, ('sl, 'sr) Either.t, ('tl, 'tr) Either.t, 'a, 'b) _t
+  left:('k, 'sl -> 'tl, 'a -> 'b) t ->
+  right:('k, 'sr -> 'tr, 'a -> 'b) t ->
+  ('k, ('sl, 'sr) Either.t -> ('tl, 'tr) Either.t, 'a -> 'b) _t
 (** Merge two optics. *)
 
 (** {2:iso Isomorphism} *)
 
-val iso : f:('s -> 'a) -> g:('b -> 't) -> ([< iso], 's, 't, 'a, 'b) _t
+val iso : f:('s -> 'a) -> g:('b -> 't) -> ([< iso], 's -> 't, 'a -> 'b) _t
 (** Build an iso from a pair of inverse functions. *)
 
 val non : ?equal:('a -> 'a -> bool) -> 'a -> ([< iso], 'a option, 'a) _t'
@@ -242,7 +252,7 @@ val anon' : f:('a -> bool) -> 'a -> ([< iso], 'a option, 'a) t'
 
 (** A submodule meant to be locally opened. *)
 module O : sig
-  val (//) : ('k, 'a, 'b, 'c, 'd) t -> ('k, 'c, 'd, 'e, 'f) t -> ('k, 'a, 'b, 'e, 'f) t
+  val (//) : ('k, 'outer, 'middle) t -> ('k, 'middle, 'inner) t -> ('k, 'outer, 'inner) t
   (** Optics composition. *)
 
   val (.%?[]) : 's -> ([> affine_fold], 's, 'a) t' -> 'a Option.t
@@ -253,7 +263,7 @@ module O : sig
       === [preview o x].
   *)
 
-  val (.%[]) : 's -> ([> getter], 's, 't, 'a, 'b) t -> 'a
+  val (.%[]) : 's -> ([> getter], 's -> _, 'a -> _) t -> 'a
   (** Index operator version of {!val:view}.
 
       [x.%[o]]
@@ -261,7 +271,7 @@ module O : sig
       === [view o x].
   *)
 
-  val (.%[]<-) : 's -> ([> setter], 's, 't, 'a, 'b) t -> 'b -> 't
+  val (.%[]<-) : 's -> ([> setter], 's -> 't, _ -> 'b) t -> 'b -> 't
   (** Index operator version of {!val:set}.
 
       [x.%[o] <- v]
@@ -269,7 +279,7 @@ module O : sig
       === [set o v x].
   *)
 
-  val (%~) : ([> setter], 's, 't, 'a, 'b) t -> ('a -> 'b) -> 's -> 't
+  val (%~) : ([> setter], 's -> 't, 'a -> 'b) t -> ('a -> 'b) -> 's -> 't
   (** Infix version of {!val:over}.
 
       [x |> o %~ f] === [over o f x].
@@ -285,29 +295,50 @@ include module type of O
 
 (** {1 Instances} *)
 
-val id : ([< iso], 's, 'a, 's, 'a) t
+val id : ([< iso], 's -> 'a, 's -> 'a) t
 (** The identity optics. *)
 
-val _1 : ([< lens], 'a * 'x, 'b * 'x, 'a, 'b) t
+val _1 :
+  ([< lens],
+   'a * 'x -> 'b * 'x,
+   'a -> 'b) t
 (** Access the 1st element of a 2-tuple. *)
 
-val _2 : ([< lens], 'x * 'a, 'x * 'b, 'a, 'b) t
+val _2 :
+  ([< lens],
+   'x * 'a -> 'x * 'b,
+   'a -> 'b) t
 (** Access the 2nd element of a 2-tuple. *)
 
-val _Ok    : ([< prism], ('a, 'x) Result.t, ('b, 'x) Result.t, 'a, 'b) t
+val _Ok :
+  ([< prism],
+   ('a, 'x) Result.t -> ('b, 'x) Result.t,
+   'a -> 'b) t
 (** A Prism that matches on the [Ok] constructor of [Result.t]. *)
 
-val _Error : ([< prism], ('x, 'a) Result.t, ('x, 'b) Result.t, 'a, 'b) t
+val _Error :
+  ([< prism],
+   ('x, 'a) Result.t -> ('x, 'b) Result.t,
+   'a -> 'b) t
 (** A Prism that matches on the [Error] constructor of [Result.t]. *)
 
-val _Some : ([< prism], 'a Option.t, 'b Option.t, 'a, 'b) t
+val _Some :
+  ([< prism],
+   'a Option.t -> 'b Option.t,
+   'a -> 'b) t
 (** A Prism that matches on the [Some] constructor of [Option.t]. *)
 
 val _None : ([< prism], 'a Option.t, unit) t'
 (** A Prism that matches on the [None] constructor of [Option.t]. *)
 
-val _Left  : ([< prism], ('a, 'x) Either.t, ('b, 'x) Either.t, 'a, 'b) t
+val _Left :
+  ([< prism],
+   ('a, 'x) Either.t -> ('b, 'x) Either.t,
+   'a -> 'b) t
 (** A Prism that matches on the [Left] constructor of [Either.t]. *)
 
-val _Right : ([< prism], ('x, 'a) Either.t, ('x, 'b) Either.t, 'a, 'b) t
+val _Right :
+  ([< prism],
+   ('x, 'a) Either.t -> ('x, 'b) Either.t,
+   'a -> 'b) t
 (** A Prism that matches on the [Right] constructor of [Either.t]. *)

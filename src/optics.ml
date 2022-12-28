@@ -3,13 +3,17 @@
    plus eta expansion
    https://stackoverflow.com/questions/29187287/sneaking-lenses-and-cps-past-the-value-restriction
    *)
-type ('k, -'s, +'t, +'a, -'b) _t =
+type ('k, -'s, +'t, +'a, -'b) __t =
   { op : 'r. ('a -> ('b -> 'r) -> 'r) -> ('s -> ('t -> 'r) -> 'r) }
 
-type ('k, -'s, +'t, +'a, -'b) t = unit -> ('k, 's, 't, 'a, 'b) _t
+type ('k, 'outer, 'inner) _t = ('k, 's, 't, 'a, 'b) __t
+    constraint 'outer = 's -> 't
+    constraint 'inner = 'a -> 'b
 
-type ('k, 's, 'a) _t' = ('k, 's, 's, 'a, 'a) _t
-type ('k, 's, 'a) t'  = ('k, 's, 's, 'a, 'a) t
+type ('k, 'outer, 'inner) t = unit -> ('k, 'outer, 'inner) _t
+
+type ('k, 's, 'a) _t' = ('k, 's -> 's, 'a -> 'a) _t
+type ('k, 's, 'a) t'  = ('k, 's -> 's, 'a -> 'a) t
 
 type setter = [`Setter]
 type affine_fold = [`Affine_fold]
