@@ -7,35 +7,42 @@ See link:https://github.com/janestreet/accessor/[accessor] library for a more co
 
 ```ocaml
 % dune utop
-utop # open Optics;;
-utop # get _1 (42, 3.14);;
+# open Optics;;
+# view _1 (42, 3.14);;
 - : int = 42
-utop # (42, (3.14, "foobar")) |> get (_2 // _1);;
+# (42, (3.14, "foobar")) |> view (_2 // _1);;
 - : float = 3.14
-utop # (42, (3.14, "foobar")).%[_2 // _1];;
+# (42, (3.14, "foobar")).%[_2 // _1];;
 - : float = 3.14
-utop # set _Some "foobar" (Some 42);;
+# set _Some "foobar" (Some 42);;
 - : string option = Option.Some "foobar"
-utop # (42, (None, "foobar")).%[_2 // _1 // _Some] <- 0;;
+# (42, (None, "foobar")).%[_2 // _1 // _Some] <- 0;;
 - : int * (int option * string) = (42, (Option.None, "foobar"))
-utop # (Some [1; 2; 3], 3.14) |> _1 // _Some // sets' List.map %~ succ;;
+# (Some [1; 2; 3], 3.14) |> _1 // _Some // sets' List.map %~ succ;;
 - : int list option * float = (Option.Some [2; 3; 4], 3.14)
-utop # _Some // to_' List.length;;
-- : (_[< `Affine_fold ], '_weak1 list option, '_weak1 list option, int, int) t
+# _Some // to_' List.length;;
+- : (_[< `Affine_fold ], '_weak1 list option -> '_weak1 list option,
+     int -> int)
+    t
 = <fun>
-utop # get _Some;;
+# view _Some;;
 Error: This expression has type
-         ([< prism ] as 'a, 'b option, 'c option, 'b, 'c) t =
-           unit -> ('a, 'b option, 'c option, 'b, 'c) Optics._t
+         ([< prism ] as 'a, 'b option -> 'c option, 'b -> 'c) t =
+           unit -> ('a, 'b option -> 'c option, 'b -> 'c) Optics._t
        but an expression was expected of type
-         ([> getter ] as 'd, 'e, 'f, 'g, 'h) t =
-           unit -> ('d, 'e, 'f, 'g, 'h) Optics._t
+         ([> getter ] as 'd, 'e -> 'f, 'g -> 'h) t =
+           unit -> ('d, 'e -> 'f, 'g -> 'h) Optics._t
+       Type
+         ('a, 'b option -> 'c option, 'b -> 'c) Optics._t =
+           ('a, 'b option, 'c option, 'b, 'c) Optics.__t
+       is not compatible with type
+         ('d, 'e -> 'f, 'g -> 'h) Optics._t = ('d, 'e, 'f, 'g, 'h) Optics.__t 
        Type 'a = [< `Affine_fold | `Affine_traversal | `Prism | `Setter ]
        is not compatible with type 'd = [> `Affine_fold | `Getter ] 
        The first variant type does not allow tag(s) `Getter
 
-utop # #require "jsonaf";;
-utop # let john =
+# #require "jsonaf";;
+# let john =
   {|
 {
   "firstName": "John",
@@ -51,13 +58,13 @@ val john : Jsonaf_kernel.t =
   `Object
     [("firstName", `String "John"); ("lastName", `String "Smith");
      ("isAlive", `True); ("age", `Number "27")]
-utop # john.%?[Json.(_Object // key "age" // _Int)];;
+# john.%?[Json.(_Object // key "age" // _Int)];;
 - : int option = Option.Some 27
-utop # john.%?[Json.(_Object // key "isAlive" // _Bool)];;
+# john.%?[Json.(_Object // key "isAlive" // _Bool)];;
 - : bool option = Option.Some true
-utop # john.%?[Json.(_Object // key "first-name" // _String)];;
+# john.%?[Json.(_Object // key "first-name" // _String)];;
 - : Json.t option = Option.None
-utop # john.%?[Json.(_Object // key "firstName" // _String)];;
+# john.%?[Json.(_Object // key "firstName" // _String)];;
 - : string option = Option.Some "John"
 ```
 
@@ -106,17 +113,17 @@ Due to the value restriction, optics created with function application
 has a weakly polymorphic type.
 
 ```ocaml
-utop # sets List.map;;
-- : (_[< setter ], '_weak2 list, '_weak3 list, '_weak2, '_weak3) Optics._t =
+# sets List.map;;
+- : (_[< setter ], '_weak2 list -> '_weak3 list, '_weak2 -> '_weak3) Optics._t
 <abstr>
 ```
 
 So, for example, if we want a polymorphic `List.map` setter, we need to wrap it in a thunk:
 
 ```ocaml
-utop # let _List_map () = sets List.map;;
-utop # _List_map;;
-- : unit -> ([< setter ], 'a list, 'b list, 'a, 'b) Optics._t = <fun>
+# let _List_map () = sets List.map;;
+# _List_map;;
+- : unit -> ([< setter ], 'a list -> 'b list, 'a -> 'b) Optics._t = <fun>
 ```
 
 This library exports optics wrapped in a thunk (`unit -> _ Optics.\_t`) as `_ Optics.t` and
@@ -125,9 +132,9 @@ There are some functions which directly create a `_ Optics.t` value, whose name 
 If you want to create an `_ Optics.t` value inline, these funciton would be a handy choice.
 
 ```ocaml
-utop # [1;2;3] |> set _List_map 1;;
+# [1;2;3] |> set _List_map 1;;
 - : int list = [1; 1; 1]
-utop # [1;2;3] |> set (sets' List.map) 1;;
+# [1;2;3] |> set (sets' List.map) 1;;
 - : int list = [1; 1; 1]
 ```
 
@@ -136,7 +143,7 @@ So, if you want to bind a variable by optics composed with `(//)`,
 you need to eta-expand it.
 
 ```ocaml
-utop # let _1_2 () = () |> _1 // _2;;
-utop # _1_2;;
-- : unit -> ([< lens ], ('a * 'b) * 'c, ('a * 'd) * 'c, 'b, 'd) Optics._t =
+# let _1_2 () = () |> _1 // _2;;
+# _1_2;;
+- : unit -> ([< lens ], ('a * 'b) * 'c -> ('a * 'd) * 'c, 'b -> 'd) Optics._t =
 ```
