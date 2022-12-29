@@ -77,11 +77,11 @@ let _Object : ([< prism], t, (string * t) List.t) Optics.t'
 
 let key : string -> ([< affine_traversal], (string * t) List.t, t) Optics.t'
   = fun k () ->
-    let update kvs v =
+    let set kvs v =
       (k, v) :: List.remove_assoc k kvs
     in
     affine_traversal
-      ~update
+      ~set
       ~destruct:(fun x -> Option.to_result ~none:x (List.assoc_opt k x))
 
 let _Array : ([< prism], t, t List.t) Optics.t'

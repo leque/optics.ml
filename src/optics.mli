@@ -103,7 +103,7 @@ val afailing' :
 
 val affine_traversal :
   destruct:('s -> ('a, 't) Result.t) ->
-  update:('s -> 'b -> 't) ->
+  set:('s -> 'b -> 't) ->
   ([< affine_traversal], 's -> 't, 'a -> 'b) _t
 (** Build an affine traversal from a destructor and a setter. *)
 

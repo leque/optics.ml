@@ -84,11 +84,11 @@ let afailing o1 o2 =
 
 let afailing' o1 o2 () = afailing o1 o2
 
-let affine_traversal ~destruct ~update =
+let affine_traversal ~destruct ~set =
   let op acont s tcont =
     Result.fold (destruct s)
       ~error:tcont
-      ~ok:(fun x -> acont x (fun b -> tcont (update s b)))
+      ~ok:(fun x -> acont x (fun b -> tcont (set s b)))
   in { op }
 
 let matching o s =
