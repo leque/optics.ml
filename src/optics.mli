@@ -161,9 +161,9 @@ val nearly_nan : unit -> ([< prism ], float, unit) Optics._t' = <fun>
 - : unit option = Option.Some ()
     ]}
 
-    To comply with the prism laws the arguments you supply to [nearly a p] are somewhat constrained.
+    To comply with the prism laws the arguments you supply to [nearly ~f a] are somewhat constrained.
 
-    We assume [p x] holds iff [x] ≡ [a]. Under that assumption then this is a valid prism.
+    We assume [f x] holds iff [x] ≡ [a]. Under that assumption then this is a valid prism.
 
     This is useful when working with a type where you can test equality for only a subset of its values, and the prism selects such a value.
 *)
